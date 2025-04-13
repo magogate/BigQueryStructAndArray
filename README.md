@@ -82,3 +82,57 @@ SELECT BQ.id
  FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable BQ
 ```
 We need this way - just in case if we need to modify the existing values in SELECT statement itself.
+
+#### How to compare 2 tables having STRUCT or ARRAY data types?
+if you try following - it will error out
+
+![image](https://github.com/user-attachments/assets/cdb50ca5-1742-4c3f-a902-5a7dcea789c9)
+
+This is because - you can simply compare tables having STRUCT data types using EXCEPT DISTINCT
+
+Reason being, data in such tables appeas as STRUCT or OBJECT (something similar to JSON file) - as below
+
+![image](https://github.com/user-attachments/assets/764cfc19-1793-47b5-8817-aadb7d4d59cb)
+
+EXCEPT DISTINCT will work if the data appars as a SINGLE record - not STRUCT or OBJECT.
+
+##### Converting STRUCT or ARRAY data types into a SINGLE record.
+So basically, we need to aggregate those records to bring them into single row; and we can do that using following query
+```
+--Way1
+SELECT BQ.id
+, BQ.user_info.name
+, BQ.user_info.age
+, ARRAY_TO_STRING(BQ.user_info.mobileNumbers, ", ") AS mobileNumbers
+, ARRAY_TO_STRING(BQ.hobbies, ", ") AS hobbies
+, ARRAY_TO_STRING(ARRAY(SELECT (scores.subject) FROM UNNEST(scores) scores),", ") AS Sub
+, ARRAY_TO_STRING(ARRAY(SELECT CAST(scores.value AS STRING) FROM UNNEST(scores) scores),", ") AS Val
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable BQ
+GROUP BY BQ.id, BQ.user_info.name, BQ.user_info.age, BQ.user_info.mobileNumbers, BQ.hobbies
+,BQ.scores
+```
+OR
+
+```
+--Way2
+SELECT BQ.id
+, BQ.user_info.name
+, BQ.user_info.age
+, ARRAY_TO_STRING(BQ.user_info.mobileNumbers, ", ") AS mobileNumbers
+, ARRAY_TO_STRING(BQ.hobbies, ", ") AS hobbies
+, ARRAY_TO_STRING(ARRAY(SELECT (scores.subject) FROM UNNEST(scores) scores),", ") AS Sub
+, ARRAY_TO_STRING(ARRAY(SELECT CAST(scores.value AS STRING) FROM UNNEST(scores) scores),", ") AS Val
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable BQ
+GROUP BY ALL
+```
+
+Here, as you can see, if columns are defined as STRUCT - it will be easy; just mention STRUCT columns in select as well as at GROUP BY; 
+however, if column is of ARRAY type - then in-order to bring them into single row - we need to use ARRAY_TO_STRING function 
+
+![image](https://github.com/user-attachments/assets/f2865b5b-469c-4f37-85ea-c98bd93f7b5e)
+
+As you can see in above image, there are 2 records - and in 2nd record - there are 2 numbers - due to which they are appearing at different levels - hence we can't use EXCEPT DISTINCT here. however, using ARRAY_TO_STRING we can bring them into single record.
+
+![image](https://github.com/user-attachments/assets/0c296081-690b-4c5b-83e2-2fd68d42e6ba)
+
+
