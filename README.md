@@ -221,19 +221,19 @@ Also, since new 3 columns are of STRUCT & ARRAY type - we can't simple use empty
 #### Option2
 ```
 INSERT INTO x5-qualified-star-w.gogates_gk14c.BigQStructTable2
-SELECT **BQ.id**
-**, STRUCT(**
-  **  BQ.user_info.name**
-  **, BQ.user_info.age**
-  **, BQ.user_info.mobileNumbers**
-**)AS UI**
-**, BQ.hobbies**
-**, ARRAY(**
-  **      SELECT STRUCT(**
-**        Score.subject**
-  **     ,CAST(Score.value AS FLOAT64) AS value**
-**      )FROM UNNEST(scores) Score**
- **) AS Sub**
+SELECT BQ.id
+, STRUCT(
+    BQ.user_info.name
+  , BQ.user_info.age
+  , BQ.user_info.mobileNumbers
+)AS UI
+, BQ.hobbies
+, ARRAY(
+        SELECT STRUCT(
+            Score.subject
+           ,CAST(Score.value AS FLOAT64) AS value
+        )FROM UNNEST(scores) Score
+ ) AS Sub
 , STRUCT(
     '' AS name
   , CAST(NULL AS INT64) AS age
