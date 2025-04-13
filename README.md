@@ -50,7 +50,7 @@ Let's insert some records to newly created table
    (2, STRUCT('Devendra', 25,['']), ['painting', 'traveling'], [STRUCT('english', 92.0), STRUCT('history', 85.5)]);
 ```
 
-#### How to select records
+### 2.How to use SELECT query on STRUCT & ARRAY data type
 ##### Option 1 - Select all cols using *
 ```
 SELECT *
@@ -83,6 +83,7 @@ SELECT BQ.id
 ```
 We need this way - just in case if we need to modify the existing values in SELECT statement itself.
 
+### 3.How to compare 2 tables which has STRUCT & ARRAY data types using EXCEPT DISTINCT
 #### How to compare 2 tables having STRUCT or ARRAY data types?
 if you try following - it will error out
 
@@ -147,7 +148,8 @@ Now, all records are at same level - let's try to use EXCEPT DISTINCT now
 
 ![image](https://github.com/user-attachments/assets/e4d4e54c-6593-43f7-a7f1-9c9cf449fe40)
 
-#### Inserting default values into STRUCT or ARRAY data types
+### 4.How to insert default values when table has STRUCT & ARRAY data types
+
 
 
 
