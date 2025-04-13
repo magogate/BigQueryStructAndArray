@@ -38,5 +38,47 @@ As you can see here,
 Once you create a table - it will looks like below:
 
 ![image](https://github.com/user-attachments/assets/a9852061-67d1-4b1a-b28c-6825a267cf9f)
+
 As you can see in image - since user_info is defined as STRUCT - at table level it appeas as a RECORD whereas mobileNumbers inside that is defined as ARRAY - hence, it appears as REPEATED.
 Also, hobbies & scores data types are defined as ARRAY - so they appear as REPEATED mode - but only score has type as RECORD since it's defined as STRUCT
+
+Let's insert some records to newly created table
+```
+ INSERT INTO x5-qualified-star-w.gogates_gk14c.BigQStructTable 
+ VALUES
+   (1, STRUCT('Mandar', 30,['123','3435']), ['reading', 'hiking'], [STRUCT('math', 95.5), STRUCT('science', 89.0)]),
+   (2, STRUCT('Devendra', 25,['']), ['painting', 'traveling'], [STRUCT('english', 92.0), STRUCT('history', 85.5)]);
+```
+
+#### How to select records
+##### Option 1 - Select all cols using *
+```
+SELECT *
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable BQ
+```
+##### Option 2 - Select all cols by mentioning them specifically
+```
+SELECT BQ.id
+, BQ.user_info
+, BQ.hobbies
+, BQ.scores
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable BQ
+```
+##### Option 3 - Select all cols by mentioning their data types i.e. ARRAY or STRUCT specifically
+```
+SELECT BQ.id
+, STRUCT(
+    BQ.user_info.name
+  , BQ.user_info.age
+  , BQ.user_info.mobileNumbers
+)AS UI
+, BQ.hobbies
+, ARRAY(
+        SELECT STRUCT(
+            Score.subject
+           ,CAST(Score.value AS FLOAT64) AS value
+        )FROM UNNEST(scores) Score
+ ) AS Sub
+ FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable BQ
+```
+We need this way - just in case if we need to modify the existing values in SELECT statement itself.
