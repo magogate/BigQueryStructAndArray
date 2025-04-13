@@ -36,7 +36,7 @@ As you can see here,
 3. scores has ARRAY data type - which again holds STRUCT data type. i.e. Array of STRUCT
 
 Once you create a table - it will looks like below:
-![image](https://github.com/user-attachments/assets/a9852061-67d1-4b1a-b28c-6825a267cf9f)
 
+![image](https://github.com/user-attachments/assets/a9852061-67d1-4b1a-b28c-6825a267cf9f)
 As you can see in image - since user_info is defined as STRUCT - at table level it appeas as a RECORD whereas mobileNumbers inside that is defined as ARRAY - hence, it appears as REPEATED.
 Also, hobbies & scores data types are defined as ARRAY - so they appear as REPEATED mode - but only score has type as RECORD since it's defined as STRUCT
