@@ -21,7 +21,7 @@ CREATE TABLE x5-qualified-star-w.gogates_gk14c.BigQStructTable  (
   `user_info` STRUCT<
     `name` STRING,
     `age` INT64,
-	mobileNumbers ARRAY<STRING>
+    `mobileNumbers` ARRAY<STRING>
   >,
   `hobbies` ARRAY<STRING>,
   `scores` ARRAY<STRUCT<
@@ -30,3 +30,4 @@ CREATE TABLE x5-qualified-star-w.gogates_gk14c.BigQStructTable  (
   >>
 );
 ```
+As you can see here, user_info has STRUCT data type - which intern again has mobileNumbers with ARRAY data type.
