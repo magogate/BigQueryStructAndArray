@@ -30,4 +30,13 @@ CREATE TABLE x5-qualified-star-w.gogates_gk14c.BigQStructTable  (
   >>
 );
 ```
-As you can see here, user_info has STRUCT data type - which intern again has mobileNumbers with ARRAY data type.
+As you can see here,
+1. user_info has STRUCT data type - which intern again has mobileNumbers with ARRAY data type. i.e. STRUCT holding ARRAY
+2. hobbies has ARRAY data type
+3. scores has ARRAY data type - which again holds STRUCT data type. i.e. Array of STRUCT
+
+Once you create a table - it will looks like below:
+![image](https://github.com/user-attachments/assets/a9852061-67d1-4b1a-b28c-6825a267cf9f)
+
+As you can see in image - since user_info is defined as STRUCT - at table level it appeas as a RECORD whereas mobileNumbers inside that is defined as ARRAY - hence, it appears as REPEATED.
+Also, hobbies & scores data types are defined as ARRAY - so they appear as REPEATED mode - but only score has type as RECORD since it's defined as STRUCT
