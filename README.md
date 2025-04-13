@@ -150,8 +150,195 @@ Now, all records are at same level - let's try to use EXCEPT DISTINCT now
 
 ### 4.How to insert default values when table has STRUCT & ARRAY data types
 
+#### Let's create another table - with 2 new cols
+```
+/**
+	Create a new table for that with same struct
+	just add 3 more columns (user_info2, hobbies2 & scores2) having same structure
+*/
+CREATE TABLE x5-qualified-star-w.gogates_gk14c.BigQStructTable2 (
+  `id` INT64,
+  `user_info` STRUCT<
+    `name` STRING,
+    `age` INT64,
+    mobileNumbers ARRAY<STRING>
+  >,
+  `hobbies` ARRAY<STRING>,
+  `scores` ARRAY<STRUCT<
+    `subject` STRING,
+    `value` FLOAT64
+    >
+  >,
+  `user_info2` STRUCT<
+    `name` STRING,
+    `age` INT64,
+    mobileNumbers ARRAY<STRING>
+  >,
+  `hobbies2` ARRAY<STRING>,
+  `scores2` ARRAY<STRUCT<
+    `subject` STRING,
+    `value` FLOAT64
+    >
+  >
+);
+```
+
+#### Option1
+```
+/***
+	Last 3 columns - doesnt exists in table from which we are quering from
+		UI2
+		hobbies2
+		scores2
+	That's why - we had to define the data type for default values
+	i.e. For Struct and Array we have defined STRUCT() or ARRAY(SELECT '')
+	Also, for Int or Flot datatype - we have to specify CAST with corresponding datatype
+*/
+INSERT INTO x5-qualified-star-w.gogates_gk14c.BigQStructTable2
+SELECT BQ.id
+, BQ.user_info
+, BQ.hobbies
+, BQ.scores
+, STRUCT(
+    '' AS name
+  , CAST(NULL AS INT64) AS age
+  , ARRAY(SELECT '') AS mobileNumbers
+)AS UI2
+, ARRAY( SELECT('')) as hobbies2
+, ARRAY(
+        SELECT STRUCT(
+            '' AS subject
+           ,CAST(NULL AS FLOAT64) AS value
+        )FROM UNNEST(scores) Score
+ ) AS scores2
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable BQ
+```
+
+Here, we are trying to insert records from x5-qualified-star-w.gogates_gk14c.BigQStructTable table - which doesn't have extra 3 columns. hence, in select clause after first 3 columns - we need to add default values. 
+Also, since new 3 columns are of STRUCT & ARRAY type - we can't simple use empty string - we need to cast them so that SELECT query they will appear as STRUCT or ARRAY.
 
 
+#### Option2
+```
+INSERT INTO x5-qualified-star-w.gogates_gk14c.BigQStructTable2
+SELECT **BQ.id
+, STRUCT(
+    BQ.user_info.name
+  , BQ.user_info.age
+  , BQ.user_info.mobileNumbers
+)AS UI
+, BQ.hobbies
+, ARRAY(
+        SELECT STRUCT(
+            Score.subject
+           ,CAST(Score.value AS FLOAT64) AS value
+        )FROM UNNEST(scores) Score
+ ) AS Sub**
+, STRUCT(
+    '' AS name
+  , CAST(NULL AS INT64) AS age
+  , ARRAY(SELECT '') AS mobileNumbers
+)AS UI2
+, ARRAY( SELECT('')) as hobbies2
+, ARRAY(
+        SELECT STRUCT(
+            '' AS subject
+           ,CAST(NULL AS FLOAT64) AS value
+        )FROM UNNEST(scores) Score
+ ) AS Sub2
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable BQ
+```
+if you want to convert or update the values in SELECT - you can specity them (existing columns) in STRUCT or ARRAY - (instead of just specifying their column names).
+
+#### Option3
+```
+/***
+	Now, Last 3 columns - "does" exists in table from which we are quering from
+		UI2
+		hobbies2
+		scores2
+	Since these columns exists - it has it's datatypes as well created
+	, so we don't need to mention these datatypes again 
+	, and can simple use column names instead
+*/
+INSERT INTO x5-qualified-star-w.gogates_gk14c.BigQStructTable2
+SELECT BQ.id
+, BQ.user_info
+, BQ.hobbies
+, BQ.scores
+, BQ.user_info2
+, BQ.hobbies2
+, BQ.scores2
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable2 BQ
+```
+
+OR
+```
+--Since the columns are same - just add *
+INSERT INTO x5-qualified-star-w.gogates_gk14c.BigQStructTable2
+SELECT BQ.*
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable2 BQ
+```
+
+
+#### Option4
+INSERT INTO x5-qualified-star-w.gogates_gk14c.BigQStructTable2
+SELECT BQ.id
+, STRUCT(
+    BQ.user_info.name
+  , BQ.user_info.age
+  , BQ.user_info.mobileNumbers
+)AS UI
+, BQ.hobbies
+, ARRAY(
+        SELECT STRUCT(
+            Score.subject
+           ,CAST(Score.value AS FLOAT64) AS value
+        )FROM UNNEST(scores) Score
+ ) AS Sub
+, STRUCT(
+    BQ.user_info2.name
+  , BQ.user_info2.age
+  , BQ.user_info2.mobileNumbers
+)AS UI2
+, BQ.hobbies2
+, ARRAY(
+        SELECT STRUCT(
+            Score2.subject
+           ,CAST(Score2.value AS FLOAT64) AS value
+        )FROM UNNEST(scores2) Score2
+ ) AS Sub
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable2 BQ
+
+
+#### Option5
+INSERT INTO x5-qualified-star-w.gogates_gk14c.BigQStructTable2
+SELECT BQ.id
+, STRUCT(
+    BQ.user_info.name
+  , BQ.user_info.age
+  , BQ.user_info.mobileNumbers
+)AS UI
+, BQ.hobbies
+, ARRAY(
+        SELECT STRUCT(
+            Score.subject
+           ,CAST(Score.value AS FLOAT64) AS value
+        )FROM UNNEST(scores) Score
+ ) AS Sub
+, STRUCT(
+    BQ.user_info2.name
+  , BQ.user_info2.age
+  , BQ.user_info2.mobileNumbers
+)AS UI2
+, BQ.hobbies2
+, ARRAY(
+        SELECT STRUCT(
+            Score2.subject
+           ,**Score2.value AS value**-- you don't need to cast; but even cast will work
+        )FROM UNNEST(scores2) Score2
+ ) AS Sub
+FROM x5-qualified-star-w.gogates_gk14c.BigQStructTable2 BQ
 
 
 
