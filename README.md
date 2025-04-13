@@ -28,4 +28,5 @@ CREATE TABLE x5-qualified-star-w.gogates_gk14c.BigQStructTable  (
     `subject` STRING,
     `value` FLOAT64
   >>
-);```
+);
+```
