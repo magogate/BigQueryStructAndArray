@@ -11,3 +11,20 @@ Main purpose of this exercise is to find out following things
 
 ### 1. How exactly STRUCT & ARRAY data types works in BQ?
 #### Step1 - Let's create a table having STRUCT & ARRAY
+
+```/***
+	Create a table with Struct and Array data type
+*/
+CREATE TABLE x5-qualified-star-w.gogates_gk14c.BigQStructTable  (
+  `id` INT64,
+  `user_info` STRUCT<
+    `name` STRING,
+    `age` INT64,
+	mobileNumbers ARRAY<STRING>
+  >,
+  `hobbies` ARRAY<STRING>,
+  `scores` ARRAY<STRUCT<
+    `subject` STRING,
+    `value` FLOAT64
+  >>
+);```
