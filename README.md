@@ -135,4 +135,21 @@ As you can see in above image, there are 2 records - and in 2nd record - there a
 
 ![image](https://github.com/user-attachments/assets/0c296081-690b-4c5b-83e2-2fd68d42e6ba)
 
+Next 2 columns - scores.subject & scores.value are little different. They are STRUCT which is inside ARRAY i.e. STRUCT will get repeated as it's defined as an ARRAY.
+
+![image](https://github.com/user-attachments/assets/4ad2bcdc-6b18-4cee-912c-e7ea22b60687)
+
+In order to bring them into single row - we need to select them individually and then again apply ARRAY_TO_STRING
+
+![image](https://github.com/user-attachments/assets/ab5e32aa-a648-46c2-b662-40c8722dcf99)
+
+Now, all records are at same level - let's try to use EXCEPT DISTINCT now
+
+![image](https://github.com/user-attachments/assets/e4d4e54c-6593-43f7-a7f1-9c9cf449fe40)
+
+#### Inserting default values into STRUCT or ARRAY data types
+
+
+
+
 
